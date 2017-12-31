@@ -5,11 +5,12 @@ import torch.nn.functional as F
 
 import pdb
 
+
 class AttLstm(nn.Module):
 
-    def __init__(self, input_size, hidden_size, num_layers = 1):
+    def __init__(self, input_size, hidden_size, num_layers=1):
         super(AttLstm, self).__init__()
-        
+
         self.input_size = input_size
         self.hidden_size = hidden_size
         self.num_layers = num_layers
@@ -22,7 +23,7 @@ class AttLstm(nn.Module):
         self.dlstm = nn.LSTM(hidden_size, hidden_size, num_layers)
 
         self.init_hidden = (autograd.Variable(torch.zeros(1, 1, hidden_size)),
-                    autograd.Variable(torch.zeros((1, 1, hidden_size))))
+                            autograd.Variable(torch.zeros((1, 1, hidden_size))))
 
     def forward(self, x):
         pdb.set_trace()
@@ -30,18 +31,18 @@ class AttLstm(nn.Module):
         e_output, (eh_n, ec_n) = self.elstm(x, self.init_hidden)
 
         seq_len = len(x)
-        ctx = self.init_hidden[0]    # initial context
+        ctx = self.init_hidden[0]  # initial context
         c_n = self.init_hidden[1]
         out = None
         for i in range(seq_len):
             m = F.tanh(self.att_eh(e_output) + self.att_ch(ctx.expand(seq_len, -1, -1)))
-            s = F.softmax(m, dim = 0)
-            z = torch.sum(e_output * s, dim = 0).view(1, 1, -1)   # broadcasting when multiply e_output and s
+            s = F.softmax(m, dim=0)
+            z = torch.sum(e_output * s, dim = 0).view(1, 1, -1)  # broadcasting when multiply e_output and s
             d_output, (h_n, c_n) = self.dlstm(z, (ctx, c_n))
             ctx = h_n
             if i == 0:  # first time
                 out = d_output
             else:
-                out = torch.cat((out, d_output), dim = 0)
+                out = torch.cat((out, d_output), dim=0)
 
         return out
