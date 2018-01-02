@@ -64,8 +64,6 @@ class C3D(nn.Module):
 
         logits = self.fc8(h)
 
-        pdb.set_trace()
-
         probs = self.softmax(logits)
 
         return probs
