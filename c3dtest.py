@@ -47,6 +47,8 @@ def get_sport_clip(clip_name, verbose = False):
     clip = np.expand_dims(clip, axis = 0)  # batch axis
     clip = np.float32(clip)
 
+    pdb.set_trace()
+
     return torch.from_numpy(clip)
 
 

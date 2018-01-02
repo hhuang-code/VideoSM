@@ -5,7 +5,7 @@ import pdb
 
 if __name__ == '__main__':
 
-    config = get_config(mode='train')
+    config = get_config(mode = 'train')
 
     sum_rate = 0.15
 
