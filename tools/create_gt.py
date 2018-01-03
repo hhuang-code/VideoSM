@@ -25,7 +25,7 @@ def plot_scores(filename, scores):
     plt.ylabel('scores')
     plt.show()
 
-def create_tvsum_gt(gt_src_file, gt_dest_file, sum_rate):
+def create_tvsum_gt(gt_src_file, gt_dest_file):
 
     duration = 16   # 16 frames for 3d cnn
     gt_dict = {}    # store ground-truth for this dataset
@@ -72,7 +72,7 @@ def create_tvsum_gt(gt_src_file, gt_dest_file, sum_rate):
         h5.create_dataset(k, data = v)
     h5.close()
 
-def create_summe_gt(gt_src_dir, gt_dest_file, sum_rate):
+def create_summe_gt(gt_src_dir, gt_dest_file):
 
     duration = 16   # 16 frames for 3d cnn
     gt_dict = {}    # store ground-truth for this datase
@@ -102,7 +102,11 @@ def create_summe_gt(gt_src_dir, gt_dest_file, sum_rate):
         h5.create_dataset(k, data = v)
     h5.close()
 
-def create_youtube_gt(video_dir, gt_src_dir, gt_dest_file):
+"""
+Args:
+    dtype: 'youtube' or 'openvideo'
+"""
+def create_youtube_gt(video_dir, gt_src_dir, gt_dest_file, dtype):
 
     duration = 16  # 16 frames for 3d cnn
     gt_dict = {}  # store ground-truth for this datase
@@ -111,7 +115,20 @@ def create_youtube_gt(video_dir, gt_src_dir, gt_dest_file):
     resnet = ResNet()
     new_size = (224, 224)
 
-    for video in glob.glob(video_dir + '/*.avi'):
+    if dtype == 'youtube':
+        video_path = video_dir + '/*.avi'
+        key_appendix = '.jpg'
+        regex = r'(frame)(\d+)(\.jpg)'  # frame#.jpg
+    elif dtype == 'openvideo':
+        video_path = video_dir + '/*.mpg'
+        key_appendix = '.jpeg'
+        regex = r'(frame)(\d+)(\.jpeg)'  # frame#.jpeg
+    else:
+        raise Exception('No such video dataset')
+
+    pdb.set_trace()
+
+    for video in glob.glob(video_path):
         tokens = str(video).split('/')
         filename = (tokens[-1].split('.'))[0]
         video_fea = None    # all frame features
@@ -151,8 +168,7 @@ def create_youtube_gt(video_dir, gt_src_dir, gt_dest_file):
 
         # read manual annotation
         avg_scores = np.zeros(num_frames) + 1
-        regex = r'(frame)(\d+)(\.jpg)'  # frame#.jpg
-        for img in glob.glob(gt_src_dir + '/' + filename + '/*/*.jpg'):
+        for img in glob.glob(gt_src_dir + '/' + filename + '/*/*' + key_appendix):
             if re.search(regex, img):
                 idx = int(re.search(regex, img).group(2))
                 ks = fps * (idx - 1) + 1    # start frame idx

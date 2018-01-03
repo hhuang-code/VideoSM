@@ -22,7 +22,7 @@ class ResNet(nn.Module):
         elif fea_type == 'resnet152':
             resnet = models.resnet152(pretrained=True)
         else:
-            raise 'No such ResNet!'
+            raise Exception('No such ResNet!')
 
         resnet.float()
         resnet.cuda()
