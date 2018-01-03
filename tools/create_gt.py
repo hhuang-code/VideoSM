@@ -122,7 +122,7 @@ def create_youtube_gt(video_dir, gt_src_dir, gt_dest_file, dtype):
     elif dtype == 'openvideo':
         video_path = video_dir + '/*.mpg'
         key_appendix = '.jpeg'
-        regex = r'(frame)(\d+)(\.jpeg)'  # frame#.jpeg
+        regex = r'(Frame)(\d+)(\.jpeg)'  # Frame#.jpeg
     else:
         raise Exception('No such video dataset')
 
