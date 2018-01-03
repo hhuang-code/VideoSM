@@ -3,6 +3,9 @@ from config import *
 
 import pdb
 
+"""
+Extract frames and convert to clips (16 frames) for C3D
+"""
 if __name__ == '__main__':
 
     config = get_config(mode = 'train')
