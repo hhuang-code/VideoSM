@@ -9,10 +9,10 @@ import pdb
 LSTM encoder-decoder with standard attention mechanism
 """
 
-class AttLstm(nn.Module):
+class StdAttLstm(nn.Module):
 
     def __init__(self, input_size, hidden_size, num_layers = 1):
-        super(AttLstm, self).__init__()
+        super(StdAttLstm, self).__init__()
 
         self.input_size = input_size
         self.hidden_size = hidden_size

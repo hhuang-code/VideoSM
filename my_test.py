@@ -1,7 +1,7 @@
 import torch
 import torch.autograd as autograd
 
-from networks.att_lstm import *
+from networks.stdatt_lstm import *
 from networks.t_cnn import *
 
 import pdb

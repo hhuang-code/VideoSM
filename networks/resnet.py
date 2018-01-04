@@ -2,6 +2,10 @@ import torch.nn as nn
 from torchvision import transforms, models
 from torch.autograd import Variable
 
+"""
+pre-trained ResNet
+"""
+
 class ResNet(nn.Module):
     """
     Args:
