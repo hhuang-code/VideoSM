@@ -5,6 +5,9 @@ import torch.nn.functional as F
 
 import pdb
 
+"""
+LSTM encoder-decoder with standard attention mechanism
+"""
 
 class AttLstm(nn.Module):
 
