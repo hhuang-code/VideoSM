@@ -9,6 +9,7 @@ import numpy as np
 import scipy.io as spio
 import matplotlib.pyplot as plt
 from more_itertools import chunked
+from collections import Counter
 
 from networks.resnet import *
 from cpd_auto import cpd_auto
@@ -43,34 +44,38 @@ def create_tvsum_gt(gt_src_file, gt_dest_file):
             # every frame has a score
             scores = [float(s) for s in row[2].strip().split(',')]
             # stack frame scores
-            if avg_scores is not None:
-                avg_scores = np.vstack((avg_scores, scores))
-            else:
+            if avg_scores is None:
                 avg_scores = scores
+            else:
+                avg_scores = np.vstack((avg_scores, scores))
             cnt += 1
             if cnt == 20:   # calculate avg scores for a video
+                counters = [Counter(avg_scores[:, i]) for i in range(avg_scores.shape[1])]
+                most_scores = [counters[i].most_common(1)[0][0] for i in range(len(counters))]
                 avg_scores = np.mean(avg_scores, axis = 0)
-                # scale to 1.0 ~ 5.0
-                max_score = max(avg_scores)
-                min_score = min(avg_scores)
-                avg_scores = 4 * (avg_scores - min_score) / (max_score - min_score) + 1
-                # delete the last several frames (< 16 frames)
-                if len(avg_scores) % duration != 0:
-                    avg_scores = avg_scores[: -(len(avg_scores) % duration)]
-                # calculate avg scores for every 16 frames
-                clip_scores = [float(sum(x)) / len(x) for x in chunked(avg_scores, duration)]
-                clip_scores = np.array([round(x) for x in clip_scores])
+                # # scale to 1.0 ~ 5.0
+                # max_score = max(avg_scores)
+                # min_score = min(avg_scores)
+                # avg_scores = 4 * (avg_scores - min_score) / (max_score - min_score) + 1
+                # # delete the last several frames (< 16 frames)
+                # if len(avg_scores) % duration != 0:
+                #     avg_scores = avg_scores[: -(len(avg_scores) % duration)]
+                # # calculate avg scores for every 16 frames
+                # clip_scores = [float(sum(x)) / len(x) for x in chunked(avg_scores, duration)]
+                # clip_scores = np.array([round(x) for x in clip_scores])
                 # to plot avg scores, uncomment it
-                # plot_scores(filename, clip_scores)
+                if filename == '-esJrBWj2d8':
+                    plot_scores(filename, avg_scores)
+                    plot_scores(filename, most_scores)
                 # add clip_scores to gt_dict
-                gt_dict[filename] = clip_scores
+                gt_dict[filename] = avg_scores
                 cnt = 0
 
     # write gt_dict to h5 file
-    h5 = h5py.File(gt_dest_file)
-    for k, v in gt_dict.items():
-        h5.create_dataset(k, data = v)
-    h5.close()
+    # h5 = h5py.File(gt_dest_file)
+    # for k, v in gt_dict.items():
+    #     h5.create_dataset(k, data = v)
+    # h5.close()
 
 def create_summe_gt(gt_src_dir, gt_dest_file):
 

@@ -13,7 +13,7 @@ if __name__ == '__main__':
     # create ground-truth for TVSum
     gt_src_file = str(config.gt_dir_tvsum) + '/ydata-tvsum50-anno.tsv'
     gt_dest_file = str(config.gt_dir_tvsum) + '/gt_tvsum.h5'
-    #create_tvsum_gt(gt_src_file, gt_dest_file)
+    create_tvsum_gt(gt_src_file, gt_dest_file)
 
     # create ground-truth for SumMe
     gt_src_dir = str(config.gt_dir_summe) + '/GT'
@@ -32,4 +32,4 @@ if __name__ == '__main__':
     gt_src_dir = str(config.gt_dir_openvideo)
     gt_dest_file = str(config.gt_dir_openvideo) + '/gt_youtube.h5'
     # dstype: 'youtube' or 'openvideo'
-    create_youtube_gt(video_dir, gt_src_dir, gt_dest_file, dtype = 'openvideo')  # the same as youtube dataset
+    #create_youtube_gt(video_dir, gt_src_dir, gt_dest_file, dtype = 'openvideo')  # the same as youtube dataset
