@@ -41,7 +41,10 @@ def convert_bin(clip_scores, sum_rate):
 
     return sln[n][W]
 
-def create_tvsum_gt(gt_src_file, gt_dest_file, sum_rate = 0.15):
+"""
+create ground-truth for TVSum
+"""
+def create_tvsum_gt(gt_src_file, sum_rate = 0.15):
 
     duration = 16   # 16 frames for 3d cnn
     gt_dict = {}    # store ground-truth for this dataset
@@ -80,22 +83,22 @@ def create_tvsum_gt(gt_src_file, gt_dest_file, sum_rate = 0.15):
                 clip_bins = np.zeros(len(clip_scores))
                 for x in key_idx:
                     clip_bins[x] = 1
+
                 # to plot avg scores, uncomment it
-                if filename == '-esJrBWj2d8':
-                    plot_scores(filename, avg_scores)
-                    plot_scores(filename, clip_scores)
-                    plot_scores(filename, clip_bins)
+                # plot_scores(filename, avg_scores)
+                # plot_scores(filename, clip_scores)
+                # plot_scores(filename, clip_bins)
+
                 # add clip_scores to gt_dict
-                gt_dict[filename] = avg_scores
+                gt_dict[filename] = clip_scores
                 cnt = 0
 
-    # write gt_dict to h5 file
-    # h5 = h5py.File(gt_dest_file)
-    # for k, v in gt_dict.items():
-    #     h5.create_dataset(k, data = v)
-    # h5.close()
+    return gt_dict
 
-def create_summe_gt(gt_src_dir, gt_dest_file, sum_rate = 0.15):
+"""
+create ground-truth for SumMe
+"""
+def create_summe_gt(gt_src_dir, sum_rate = 0.15):
 
     duration = 16   # 16 frames for 3d cnn
     gt_dict = {}    # store ground-truth for this datase
@@ -118,22 +121,21 @@ def create_summe_gt(gt_src_dir, gt_dest_file, sum_rate = 0.15):
         clip_bins = np.zeros(len(clip_scores))
         for x in key_idx:
             clip_bins[x] = 1
+
         # to plot avg scores, uncomment it
-        if filename == 'Air_Force_One':
-            pdb.set_trace()
-            plot_scores(filename, avg_scores)
-            plot_scores(filename, clip_scores)
-            plot_scores(filename, clip_bins)
+        # plot_scores(filename, avg_scores)
+        # plot_scores(filename, clip_scores)
+        # plot_scores(filename, clip_bins)
+
         # add clip_scores to gt_dict
         gt_dict[filename] = clip_scores
 
-    # write gt_dict to h5 file
-    # h5 = h5py.File(gt_dest_file)
-    # for k, v in gt_dict.items():
-    #     h5.create_dataset(k, data = v)
-    # h5.close()
+    return gt_dict
 
-def create_youtube_gt(video_dir, gt_src_dir, gt_dest_file, sum_rate = 0.15):
+"""
+create ground-truth for Youtube
+"""
+def create_youtube_gt(video_dir, gt_src_dir, sum_rate = 0.15):
 
     duration = 16  # 16 frames for 3d cnn
     gt_dict = {}  # store ground-truth for this datase
@@ -148,8 +150,7 @@ def create_youtube_gt(video_dir, gt_src_dir, gt_dest_file, sum_rate = 0.15):
     for video in glob.glob(video_path):
         tokens = str(video).split('/')
         filename = (tokens[-1].split('.'))[0]
-        if filename != 'v99':
-            continue
+
         video_fea = None    # all frame features
 
         # extract frame features (resnet101) per video
@@ -163,10 +164,10 @@ def create_youtube_gt(video_dir, gt_src_dir, gt_dest_file, sum_rate = 0.15):
                 res_pool5 = resnet(image)
                 # gpu variable -> cpu variable -> tensor -> numpy array -> 1D array
                 frame_fea = res_pool5.cpu().data.numpy().flatten()
-                if video_fea is not None:
-                    video_fea = np.vstack((video_fea, frame_fea))
-                else:
+                if video_fea is None:
                     video_fea = frame_fea
+                else:
+                    video_fea = np.vstack((video_fea, frame_fea))
                 cnt += 1
             else:
                 break
@@ -223,20 +224,19 @@ def create_youtube_gt(video_dir, gt_src_dir, gt_dest_file, sum_rate = 0.15):
         clip_bins = np.zeros(len(clip_scores))
         for x in key_idx:
             clip_bins[x] = 1
+
         # to plot avg scores, uncomment it
-        if filename == 'v99':
-            pdb.set_trace()
-            plot_scores(filename, avg_scores)
-            plot_scores(filename, clip_scores)
-            plot_scores(filename, clip_bins)
+        # plot_scores(filename, avg_scores)
+        # plot_scores(filename, clip_scores)
+        # plot_scores(filename, clip_bins)
+
         gt_dict[filename] = clip_scores
 
-    # write gt_dict to h5 file
-    # h5 = h5py.File(gt_dest_file)
-    # for k, v in gt_dict.items():
-    #     h5.create_dataset(k, data = v)
-    # h5.close()
+    return gt_dict
 
+"""
+create ground-truth for OpenVideo
+"""
 def create_openvideo_gt(video_dir, gt_src_dir, gt_dest_file, sum_rate = 0.15):
 
     duration = 16  # 16 frames for 3d cnn
@@ -287,8 +287,6 @@ def create_openvideo_gt(video_dir, gt_src_dir, gt_dest_file, sum_rate = 0.15):
 
         cps = np.concatenate(([0], cps, [num_frames - 1]))
 
-        pdb.set_trace()
-
         # read manual annotation
         avg_scores = np.zeros(num_frames)
         for img in glob.glob(gt_src_dir + '/' + filename + '/*/*' + '.jpeg'):
@@ -327,19 +325,92 @@ def create_openvideo_gt(video_dir, gt_src_dir, gt_dest_file, sum_rate = 0.15):
         clip_bins = np.zeros(len(clip_scores))
         for x in key_idx:
             clip_bins[x] = 1
+
         # to plot avg scores, uncomment it
-        if filename == 'v56':
-            pdb.set_trace()
-            plot_scores(filename, avg_scores)
-            plot_scores(filename, clip_scores)
-            plot_scores(filename, clip_bins)
+        # plot_scores(filename, avg_scores)
+        # plot_scores(filename, clip_scores)
+        # plot_scores(filename, clip_bins)
+
         gt_dict[filename] = clip_scores
 
-    # write gt_dict to h5 file
-    # h5 = h5py.File(gt_dest_file)
-    # for k, v in gt_dict.items():
-    #     h5.create_dataset(k, data = v)
-    # h5.close()
+    return gt_dict
 
+"""
+combine video data and ground-truth together for TVSum
+"""
+def combine_tvsum(video_dir, gt_src_file, combined_dir, sum_rate):
 
+    # get converted ground-truth
+    gt_dict = create_tvsum_gt(gt_src_file, sum_rate)
 
+    # get frames for every video
+    for filename, gt in gt_dict.iteritems():
+        clips = get_frames(video_dir, filename + '.mp4')
+        # clips and ground-truth have the same length
+        assert len(clips) == len(gt_dict[filename]), 'clips and ground-truth have different length!'
+
+        # write combined data (per video) to h5 file
+        h5 = h5py.File(os.path.join(combined_dir, filename + '.h5'))
+        h5.create_dataset('data', data = clips, compression = 'gzip', compression_opts = 9)
+        h5.create_dataset('gt', data = gt_dict[filename], compression = 'gzip', compression_opts = 9)
+        h5.close()
+
+"""
+combine video data and ground-truth together for Summe
+"""
+def combine_summe(video_dir, gt_src_dir, combined_dir, sum_rate):
+
+    # get converted ground-truth
+    gt_dict = create_summe_gt(gt_src_dir, sum_rate=0.15)
+
+    # get frames for every video
+    for filename, gt in gt_dict.iteritems():
+        clips = get_frames(video_dir, filename + '.mp4')
+        # clips and ground-truth have the same length
+        assert len(clips) == len(gt_dict[filename]), 'clips and ground-truth have different length!'
+
+        # write combined data (per video) to h5 file
+        h5 = h5py.File(os.path.join(combined_dir, filename + '.h5'))
+        h5.create_dataset('data', data = clips, compression = 'gzip', compression_opts = 9)
+        h5.create_dataset('gt', data = gt_dict[filename], compression = 'gzip', compression_opts = 9)
+        h5.close()
+
+"""
+combine video data and ground-truth together for Youtube
+"""
+def combine_youtube(video_dir, gt_src_dir, combined_dir, sum_rate):
+
+    # get converted ground-truth
+    gt_dict = create_youtube_gt(video_dir, gt_src_dir, sum_rate)
+
+    # get frames for every video
+    for filename, gt in gt_dict.iteritems():
+        clips = get_frames(video_dir, filename + '.avi')
+        # clips and ground-truth have the same length
+        assert len(clips) == len(gt_dict[filename]), 'clips and ground-truth have different length!'
+
+        # write combined data (per video) to h5 file
+        h5 = h5py.File(os.path.join(combined_dir, filename + '.h5'))
+        h5.create_dataset('data', data = clips, compression = 'gzip', compression_opts = 9)
+        h5.create_dataset('gt', data = gt_dict[filename], compression = 'gzip', compression_opts = 9)
+        h5.close()
+
+"""
+combine video data and ground-truth together for OpenVideo
+"""
+def combine_openvideo(video_dir, gt_src_dir, combined_dir, sum_rate):
+
+    # get converted ground-truth
+    gt_dict = create_openvideo_gt(video_dir, gt_src_dir, sum_rate)
+
+    # get frames for every video
+    for filename, gt in gt_dict.iteritems():
+        clips = get_frames(video_dir, filename + '.mpg')
+        # clips and ground-truth have the same length
+        assert len(clips) == len(gt_dict[filename]), 'clips and ground-truth have different length!'
+
+        # write combined data (per video) to h5 file
+        h5 = h5py.File(os.path.join(combined_dir, filename + '.h5'))
+        h5.create_dataset('data', data = clips, compression = 'gzip', compression_opts = 9)
+        h5.create_dataset('gt', data = gt_dict[filename], compression = 'gzip', compression_opts = 9)
+        h5.close()
