@@ -5,6 +5,10 @@ from pathlib import Path
 import numpy as np
 import random
 
+
+current_dir = Path('.')
+result_dir='./split_dataset.csv'
+
 def ran_split(dataset, partitions=1):
     parts=[]
     it_num = len(dataset) / partitions
@@ -33,25 +37,37 @@ def ran_split(dataset, partitions=1):
     return parts
 
 #number of partitions
-p=5
-current_dir = Path('.')
-result_dir='./split_dataset.csv'
-aggr_list = []
-for i in range(p):
-    aggr_list.append([])
 
-for child in current_dir.iterdir():
 
-    if child.is_dir() and child != Path('./.idea')and child.stem != 'videolist':
-        videolist = []
-        for video in child.iterdir():
-            if video.suffix == '.mp4' or video.suffix== '.mpg' or video.suffix=='.avi':
-                videolist.append(str(video.parent)+'/'+str(video.stem))
-        #videolist=np.array(videolist)
-        #videolist=pd.DataFrame(videolist.T)
-        parts=ran_split(videolist,p)
-        for i in range(p):
-            aggr_list[i].extend(parts[i])
-aggr_list=np.array(aggr_list)
-aggr_list=pd.DataFrame(aggr_list.T)
-aggr_list.to_csv(result_dir, header=False, index=False)
+def split_dataset(p=1):
+    aggr_list = []
+    for i in range(p):
+        aggr_list.append([])
+
+    for child in current_dir.iterdir():
+
+        if child.is_dir() and child != Path('./.idea') and child.stem != 'videolist':
+            videolist = []
+            for video in child.iterdir():
+                if video.suffix == '.mp4' or video.suffix == '.mpg' or video.suffix == '.avi':
+                    videolist.append(str(video.parent) + '/' + str(video.stem))
+            # videolist=np.array(videolist)
+            # videolist=pd.DataFrame(videolist.T)
+            parts = ran_split(videolist, p)
+            for i in range(p):
+                aggr_list[i].extend(parts[i])
+    aggr_list = np.array(aggr_list)
+    aggr_list = pd.DataFrame(aggr_list.T)
+    aggr_list.to_csv(result_dir, header=False, index=False)
+    return aggr_list
+
+def get_datasets(trainsets=1,testsets=1):
+    datasets=split_dataset(trainsets+testsets)
+    columns=datasets.columns
+    train=datasets[columns[:trainsets]].values.flatten('F')
+    test=datasets[columns[trainsets:]].values.flatten('F')
+    #print(train)
+    #print(test)
+    return [train,test]
+
+#get_datasets(4,1)
