@@ -351,8 +351,9 @@ def combine_tvsum(video_dir, gt_src_file, combined_dir, sum_rate):
 
         # write combined data (per video) to h5 file
         h5 = h5py.File(os.path.join(combined_dir, filename + '.h5'))
-        h5.create_dataset('data', data = clips, compression = 'gzip', compression_opts = 9)
-        h5.create_dataset('gt', data = gt_dict[filename], compression = 'gzip', compression_opts = 9)
+        if not os.path.exists(filename):
+            h5.create_dataset('data', data = clips, compression = 'gzip', compression_opts = 9)
+            h5.create_dataset('gt', data = gt_dict[filename], compression = 'gzip', compression_opts = 9)
         h5.close()
 
 """
@@ -361,7 +362,7 @@ combine video data and ground-truth together for Summe
 def combine_summe(video_dir, gt_src_dir, combined_dir, sum_rate):
 
     # get converted ground-truth
-    gt_dict = create_summe_gt(gt_src_dir, sum_rate=0.15)
+    gt_dict = create_summe_gt(gt_src_dir, sum_rate)
 
     # get frames for every video
     for filename, gt in gt_dict.iteritems():
@@ -371,8 +372,9 @@ def combine_summe(video_dir, gt_src_dir, combined_dir, sum_rate):
 
         # write combined data (per video) to h5 file
         h5 = h5py.File(os.path.join(combined_dir, filename + '.h5'))
-        h5.create_dataset('data', data = clips, compression = 'gzip', compression_opts = 9)
-        h5.create_dataset('gt', data = gt_dict[filename], compression = 'gzip', compression_opts = 9)
+        if not os.path.exists(filename):
+            h5.create_dataset('data', data = clips, compression = 'gzip', compression_opts = 9)
+            h5.create_dataset('gt', data = gt_dict[filename], compression = 'gzip', compression_opts = 9)
         h5.close()
 
 """
@@ -380,8 +382,21 @@ combine video data and ground-truth together for Youtube
 """
 def combine_youtube(video_dir, gt_src_dir, combined_dir, sum_rate):
 
-    # get converted ground-truth
-    gt_dict = create_youtube_gt(video_dir, gt_src_dir, sum_rate)
+    gt_dict = {}
+
+    if not os.path.exists(os.path.join(gt_src_dir, 'gt.h5')):
+        # get converted ground-truth
+        gt_dict = create_youtube_gt(video_dir, gt_src_dir, sum_rate)
+        gt_h5 = h5py.File(os.path.join(gt_src_dir, 'gt.h5'))
+        for k, v in gt_dict.items():
+            gt_h5.create_dataset(k, data = v)
+        gt_h5.close()
+    else:
+        # load converted ground-truth
+        gt_h5 = h5py.File(os.path.join(gt_src_dir, 'gt.h5'))
+        for key in gt_h5.keys():
+            gt_dict[key] = gt_h5[key]
+        gt_h5.close()
 
     # get frames for every video
     for filename, gt in gt_dict.iteritems():
@@ -391,8 +406,9 @@ def combine_youtube(video_dir, gt_src_dir, combined_dir, sum_rate):
 
         # write combined data (per video) to h5 file
         h5 = h5py.File(os.path.join(combined_dir, filename + '.h5'))
-        h5.create_dataset('data', data = clips, compression = 'gzip', compression_opts = 9)
-        h5.create_dataset('gt', data = gt_dict[filename], compression = 'gzip', compression_opts = 9)
+        if not os.path.exists(filename):
+            h5.create_dataset('data', data = clips, compression = 'gzip', compression_opts = 9)
+            h5.create_dataset('gt', data = gt_dict[filename], compression = 'gzip', compression_opts = 9)
         h5.close()
 
 """
@@ -400,8 +416,21 @@ combine video data and ground-truth together for OpenVideo
 """
 def combine_openvideo(video_dir, gt_src_dir, combined_dir, sum_rate):
 
-    # get converted ground-truth
-    gt_dict = create_openvideo_gt(video_dir, gt_src_dir, sum_rate)
+    gt_dict = {}
+
+    if not os.path.exists(os.path.join(gt_src_dir, 'gt.h5')):
+        # get converted ground-truth
+        gt_dict = create_openvideo_gt(video_dir, gt_src_dir, sum_rate)
+        gt_h5 = h5py.File(os.path.join(gt_src_dir, 'gt.h5'))
+        for k, v in gt_dict.items():
+            gt_h5.create_dataset(k, data = v)
+        gt_h5.close()
+    else:
+        # load converted ground-truth
+        gt_h5 = h5py.File(os.path.join(gt_src_dir, 'gt.h5'))
+        for key in gt_h5.keys():
+            gt_dict[key] = gt_h5[key]
+        gt_h5.close()
 
     # get frames for every video
     for filename, gt in gt_dict.iteritems():
@@ -411,6 +440,7 @@ def combine_openvideo(video_dir, gt_src_dir, combined_dir, sum_rate):
 
         # write combined data (per video) to h5 file
         h5 = h5py.File(os.path.join(combined_dir, filename + '.h5'))
-        h5.create_dataset('data', data = clips, compression = 'gzip', compression_opts = 9)
-        h5.create_dataset('gt', data = gt_dict[filename], compression = 'gzip', compression_opts = 9)
+        if not os.path.exists(filename):
+            h5.create_dataset('data', data = clips, compression = 'gzip', compression_opts = 9)
+            h5.create_dataset('gt', data = gt_dict[filename], compression = 'gzip', compression_opts = 9)
         h5.close()

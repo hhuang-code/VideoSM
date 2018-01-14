@@ -7,12 +7,13 @@ import random
 
 
 current_dir = Path('.')
-result_dir='./split_dataset.csv'
+result_dir = './split_dataset.csv'
 
-def ran_split(dataset, partitions=1):
+def ran_split(dataset, partitions = 5):
     parts=[]
     it_num = len(dataset) / partitions
-    for _ in range(partitions-1):
+
+    for _ in range(partitions - 1):
 
         part=[]
         new_dataset=[]
@@ -25,22 +26,24 @@ def ran_split(dataset, partitions=1):
         #                 break
         #         else:
         #             new_dataset.append(item)
-        part1=random.sample(range(len(dataset)),int(it_num))
+        part1 = random.sample(range(len(dataset)), int(it_num))
         for item in range(len(dataset)):
             if item in part1:
                 part.append(dataset[item])
             else:
                 new_dataset.append(dataset[item])
-        dataset=new_dataset
+
+        dataset = new_dataset
         parts.append(part)
+
     parts.append(dataset)
+
     return parts
 
 #number of partitions
-
-
-def split_dataset(p=1):
+def split_dataset(p = 5):
     aggr_list = []
+
     for i in range(p):
         aggr_list.append([])
 
@@ -56,16 +59,18 @@ def split_dataset(p=1):
             parts = ran_split(videolist, p)
             for i in range(p):
                 aggr_list[i].extend(parts[i])
+
     aggr_list = np.array(aggr_list)
     aggr_list = pd.DataFrame(aggr_list.T)
-    aggr_list.to_csv(result_dir, header=False, index=False)
+    aggr_list.to_csv(result_dir, header = False, index = False)
+
     return aggr_list
 
-def get_datasets(trainsets=1,testsets=1):
-    datasets=split_dataset(trainsets+testsets)
+def get_datasets(trainset = 4,testset = 1):
+    datasets = split_dataset(trainset + testset)
     columns=datasets.columns
-    train=datasets[columns[:trainsets]].values.flatten('F')
-    test=datasets[columns[trainsets:]].values.flatten('F')
+    train=datasets[columns[:trainset]].values.flatten('F')
+    test=datasets[columns[trainset:]].values.flatten('F')
     #print(train)
     #print(test)
     return [train,test]
