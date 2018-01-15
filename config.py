@@ -35,6 +35,9 @@ def get_config(**kwargs):
     parser.add_argument('--video_dir_openvideo', type = str, default = Path('/localdisk/videosm/dataset/video/OpenVideo'))
     parser.add_argument('--gt_dir_openvideo', type = str, default = Path('/localdisk/videosm/dataset/gt/OpenVideo'))
     parser.add_argument('--combined_dir_openvideo', type = str, default = Path('/localdisk/videosm/dataset/combined/OpenVideo'))
+
+    parser.add_argument('--gt_dir', type=str, default=Path('/localdisk/videosm/dataset/gt'))
+    parser.add_argument('--combined_dir', type = str, default = Path('/localdisk/videosm/dataset/combined'))
     
     # model path
     parser.add_argument('--c3d_model_dir', type = str, default = Path('/localdisk/videosm/model/'))

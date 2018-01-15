@@ -108,7 +108,7 @@ def create_summe_gt(gt_src_dir, sum_rate = 0.15):
         mat = spio.loadmat(matfile, squeeze_me = True)
         avg_scores = mat['gt_score']
 
-        # special case: delete the last frame to keep the number of ground-truth the same as video frames extract by opencv
+        # SPECIAL CASE: delete the last frame to keep the number of ground-truth the same as video frames extract by opencv
         if filename == 'playing_ball':
             avg_scores = avg_scores[:-2]
 
