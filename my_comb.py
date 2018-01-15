@@ -15,13 +15,13 @@ if __name__ == '__main__':
     video_dir = str(config.video_dir_tvsum)
     gt_src_file = str(config.gt_dir_tvsum) + '/ydata-tvsum50-anno.tsv'
     combined_dir = str(config.combined_dir_tvsum)
-    #combine_tvsum(video_dir, gt_src_file, combined_dir, sum_rate = 0.15)
+    combine_tvsum(video_dir, gt_src_file, combined_dir, sum_rate = 0.15)
 
     # create ground-truth for SumMe
     video_dir = str(config.video_dir_summe)
     gt_src_dir = str(config.gt_dir_summe) + '/GT'
     combined_dir = str(config.combined_dir_summe)
-    #combine_summe(video_dir, gt_src_dir, combined_dir, sum_rate = 0.15)
+    combine_summe(video_dir, gt_src_dir, combined_dir, sum_rate = 0.15)
 
     # create ground-truth for Youtube
     video_dir = str(config.video_dir_youtube)

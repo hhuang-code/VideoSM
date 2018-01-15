@@ -107,6 +107,11 @@ def create_summe_gt(gt_src_dir, sum_rate = 0.15):
         filename = matfile[matfile.rfind('/') + 1 : -4]
         mat = spio.loadmat(matfile, squeeze_me = True)
         avg_scores = mat['gt_score']
+
+        # special case: delete the last frame to keep the number of ground-truth the same as video frames extract by opencv
+        if filename == 'playing_ball':
+            avg_scores = avg_scores[:-2]
+
         # scale to 0.0 ~ 1.0
         max_score = max(avg_scores)
         min_score = min(avg_scores)
@@ -177,6 +182,9 @@ def create_youtube_gt(video_dir, gt_src_dir, sum_rate = 0.15):
 
         cv2.destroyAllWindows()
         vidcap.release()
+
+        # some frames cannot be read
+        num_frames = min(num_frames, cnt)
 
         # segment video
         length = num_frames / fps     # in second
@@ -279,6 +287,9 @@ def create_openvideo_gt(video_dir, gt_src_dir, gt_dest_file, sum_rate = 0.15):
         cv2.destroyAllWindows()
         vidcap.release()
 
+        # some frames cannot be read
+        num_frames = min(num_frames, cnt)
+
         # segment video
         length = num_frames / fps     # in second
         kernel = np.dot(video_fea, video_fea.T)
@@ -345,16 +356,17 @@ def combine_tvsum(video_dir, gt_src_file, combined_dir, sum_rate):
 
     # get frames for every video
     for filename, gt in gt_dict.iteritems():
-        clips = get_frames(video_dir, filename + '.mp4')
-        # clips and ground-truth have the same length
-        assert len(clips) == len(gt_dict[filename]), 'clips and ground-truth have different length!'
 
-        # write combined data (per video) to h5 file
-        h5 = h5py.File(os.path.join(combined_dir, filename + '.h5'))
-        if not os.path.exists(filename):
+        if not os.path.exists(os.path.join(combined_dir, filename + '.h5')):
+            clips = get_frames(video_dir, filename + '.mp4')
+            # clips and ground-truth have the same length
+            assert len(clips) == len(gt), 'clips and ground-truth have different length!'
+
+            # write combined data (per video) to h5 file
+            h5 = h5py.File(os.path.join(combined_dir, filename + '.h5'))
             h5.create_dataset('data', data = clips, compression = 'gzip', compression_opts = 9)
             h5.create_dataset('gt', data = gt_dict[filename], compression = 'gzip', compression_opts = 9)
-        h5.close()
+            h5.close()
 
 """
 combine video data and ground-truth together for Summe
@@ -366,16 +378,17 @@ def combine_summe(video_dir, gt_src_dir, combined_dir, sum_rate):
 
     # get frames for every video
     for filename, gt in gt_dict.iteritems():
-        clips = get_frames(video_dir, filename + '.mp4')
-        # clips and ground-truth have the same length
-        assert len(clips) == len(gt_dict[filename]), 'clips and ground-truth have different length!'
 
-        # write combined data (per video) to h5 file
-        h5 = h5py.File(os.path.join(combined_dir, filename + '.h5'))
-        if not os.path.exists(filename):
+        if not os.path.exists(os.path.join(combined_dir, filename + '.h5')) and filename in ['playing_ball']:
+            clips = get_frames(video_dir, filename + '.mp4')
+            # clips and ground-truth have the same length
+            assert len(clips) == len(gt), 'clips and ground-truth have different length!'
+
+            # write combined data (per video) to h5 file
+            h5 = h5py.File(os.path.join(combined_dir, filename + '.h5'))
             h5.create_dataset('data', data = clips, compression = 'gzip', compression_opts = 9)
             h5.create_dataset('gt', data = gt_dict[filename], compression = 'gzip', compression_opts = 9)
-        h5.close()
+            h5.close()
 
 """
 combine video data and ground-truth together for Youtube
@@ -387,29 +400,32 @@ def combine_youtube(video_dir, gt_src_dir, combined_dir, sum_rate):
     if not os.path.exists(os.path.join(gt_src_dir, 'gt.h5')):
         # get converted ground-truth
         gt_dict = create_youtube_gt(video_dir, gt_src_dir, sum_rate)
-        gt_h5 = h5py.File(os.path.join(gt_src_dir, 'gt.h5'))
+        gt_h5 = h5py.File(os.path.join(gt_src_dir, 'gt.h5'), 'w')
         for k, v in gt_dict.items():
             gt_h5.create_dataset(k, data = v)
         gt_h5.close()
     else:
         # load converted ground-truth
-        gt_h5 = h5py.File(os.path.join(gt_src_dir, 'gt.h5'))
+        gt_h5 = h5py.File(os.path.join(gt_src_dir, 'gt.h5'), 'r')
         for key in gt_h5.keys():
             gt_dict[key] = gt_h5[key]
         gt_h5.close()
 
     # get frames for every video
     for filename, gt in gt_dict.iteritems():
-        clips = get_frames(video_dir, filename + '.avi')
-        # clips and ground-truth have the same length
-        assert len(clips) == len(gt_dict[filename]), 'clips and ground-truth have different length!'
 
-        # write combined data (per video) to h5 file
-        h5 = h5py.File(os.path.join(combined_dir, filename + '.h5'))
-        if not os.path.exists(filename):
+        if not os.path.exists(os.path.join(combined_dir, filename + '.h5')):
+            clips = get_frames(video_dir, filename + '.avi')
+            # clips and ground-truth have the same length
+            assert len(clips) == len(gt), 'clips and ground-truth have different length!'
+
+            # write combined data (per video) to h5 file
+            h5 = h5py.File(os.path.join(combined_dir, filename + '.h5'))
             h5.create_dataset('data', data = clips, compression = 'gzip', compression_opts = 9)
             h5.create_dataset('gt', data = gt_dict[filename], compression = 'gzip', compression_opts = 9)
-        h5.close()
+            h5.close()
+
+    gt_h5.close()
 
 """
 combine video data and ground-truth together for OpenVideo
@@ -421,26 +437,27 @@ def combine_openvideo(video_dir, gt_src_dir, combined_dir, sum_rate):
     if not os.path.exists(os.path.join(gt_src_dir, 'gt.h5')):
         # get converted ground-truth
         gt_dict = create_openvideo_gt(video_dir, gt_src_dir, sum_rate)
-        gt_h5 = h5py.File(os.path.join(gt_src_dir, 'gt.h5'))
+        gt_h5 = h5py.File(os.path.join(gt_src_dir, 'gt.h5'), 'w')
         for k, v in gt_dict.items():
             gt_h5.create_dataset(k, data = v)
-        gt_h5.close()
     else:
         # load converted ground-truth
-        gt_h5 = h5py.File(os.path.join(gt_src_dir, 'gt.h5'))
+        gt_h5 = h5py.File(os.path.join(gt_src_dir, 'gt.h5'), 'r')
         for key in gt_h5.keys():
             gt_dict[key] = gt_h5[key]
-        gt_h5.close()
 
     # get frames for every video
     for filename, gt in gt_dict.iteritems():
-        clips = get_frames(video_dir, filename + '.mpg')
-        # clips and ground-truth have the same length
-        assert len(clips) == len(gt_dict[filename]), 'clips and ground-truth have different length!'
 
-        # write combined data (per video) to h5 file
-        h5 = h5py.File(os.path.join(combined_dir, filename + '.h5'))
-        if not os.path.exists(filename):
+        if not os.path.exists(os.path.join(combined_dir, filename + '.h5')):
+            clips = get_frames(video_dir, filename + '.mpg')
+            # clips and ground-truth have the same length
+            assert len(clips) == len(gt), 'clips and ground-truth have different length!'
+
+            # write combined data (per video) to h5 file
+            h5 = h5py.File(os.path.join(combined_dir, filename + '.h5'))
             h5.create_dataset('data', data = clips, compression = 'gzip', compression_opts = 9)
             h5.create_dataset('gt', data = gt_dict[filename], compression = 'gzip', compression_opts = 9)
-        h5.close()
+            h5.close()
+
+    gt_h5.close()
