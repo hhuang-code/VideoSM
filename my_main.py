@@ -9,15 +9,6 @@ from model import *
 
 import pdb
 
-def build_model():
-    pass
-
-def train_model():
-    pass
-
-def test_model():
-    pass
-
 if __name__ == '__main__':
 
     config = get_config(mode = 'train')
