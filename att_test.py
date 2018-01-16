@@ -18,6 +18,8 @@ if __name__ == '__main__':
     input = [autograd.Variable(torch.randn((1, input_size))) for _ in range(900)]
     input = torch.cat(input).view(len(input), 1, -1)
 
+    pdb.set_trace()
+
     # stdattlstm = StdAttLstm(input_size, hidden_size)
     # output = stdattlstm(input)
 

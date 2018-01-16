@@ -43,11 +43,10 @@ class VLAttHierLstm(nn.Module):
         self.att_v2s = nn.Linear(hidden_size, 1)
 
         # initial states
-        self.h_0 = autograd.Variable(torch.zeros(1, 1, hidden_size))
-        self.c_0 = autograd.Variable(torch.zeros(1, 1, hidden_size))
+        self.h_0 = autograd.Variable(torch.zeros(1, 1, hidden_size)).cuda()
+        self.c_0 = autograd.Variable(torch.zeros(1, 1, hidden_size)).cuda()
 
     def forward(self, x):
-
         bot_lstm_out, (bot_h_n, bot_c_n) = self.bot_lstm(x, (self.h_0, self.c_0))
 
         output = None   # output of VLAttHierLstm

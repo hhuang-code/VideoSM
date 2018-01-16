@@ -58,16 +58,18 @@ entry function
 """
 def get_datasets(dataset_dir, gt_dir, trainset = 4,testset = 1):
 
-    datasets = split_dataset(dataset_dir, trainset + testset)
-
-    # save splited dataset
-    datasets = np.array(datasets)
-    datasets = pd.DataFrame(datasets.T)
-    datasets.to_csv(os.path.join(gt_dir, 'split_dataset.csv'), header = False, index = False)
+    if not os.path.exists(os.path.join(gt_dir, 'split_dataset.csv')):
+        datasets = split_dataset(dataset_dir, trainset + testset)
+        # save splited dataset
+        datasets = np.array(datasets)
+        datasets = pd.DataFrame(datasets.T)
+        datasets.to_csv(os.path.join(gt_dir, 'split_dataset.csv'), header = False, index = False)
+    else:
+        datasets = pd.read_csv(os.path.join(gt_dir, 'split_dataset.csv'), header = None)
 
     # get training and testing set
     columns = datasets.columns
-    train = datasets[columns[:trainset]].values.flatten('F')
-    test = datasets[columns[trainset:]].values.flatten('F')
+    train_set = datasets[columns[:trainset]].values.flatten('F')
+    test_set = datasets[columns[trainset:]].values.flatten('F')
 
-    return [train, test]
+    return [train_set, test_set]

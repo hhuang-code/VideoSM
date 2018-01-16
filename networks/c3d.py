@@ -28,14 +28,17 @@ class C3D(nn.Module):
         self.conv5b = nn.Conv3d(512, 512, kernel_size = (3, 3, 3), padding = (1, 1, 1))
         self.pool5 = nn.MaxPool3d(kernel_size = (2, 2, 2), stride = (2, 2, 2), padding = (0, 1, 1))
 
-        self.fc6 = nn.Linear(8192, 4096)
+        self.fc6 = nn.Linear(8192, 4096)    # L2 norm of this layer as output
+
+        # unused two layers
         self.fc7 = nn.Linear(4096, 4096)
         self.fc8 = nn.Linear(4096, 487)
 
         self.dropout = nn.Dropout(p = 0.5)
 
         self.relu = nn.ReLU()
-        self.softmax = nn.Softmax(dim = 1)
+
+        # self.softmax = nn.Softmax(dim = 1)
 
     def forward(self, x):
         h = self.relu(self.conv1(x))
@@ -59,15 +62,17 @@ class C3D(nn.Module):
         h = h.view(-1, 8192)
         h = self.relu(self.fc6(h))
         h = self.dropout(h)
-        h = self.relu(self.fc7(h))
-        h = self.dropout(h)
 
-        logits = self.fc8(h)
+        # h = self.relu(self.fc7(h))
+        # h = self.dropout(h)
+        #
+        # logits = self.fc8(h)
+        #
+        # probs = self.softmax(logits)
+        #
+        # return probs
 
-        probs = self.softmax(logits)
-
-        return probs
-
+        return h
 
 """
 References

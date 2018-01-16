@@ -1,6 +1,8 @@
 import numpy as np
 import weave
 
+# only support python 2.x (for weave)
+
 """
 The code is downloaded from http://lear.inrialpes.fr/people/potapov/med_summaries.php and described in [1].
 """
