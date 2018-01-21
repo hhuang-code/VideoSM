@@ -45,10 +45,32 @@ def get_frames(video_dir, filename):
         else:
             break
 
+    vidcap.release()
+    cv2.destroyAllWindows()
+
+    return clips    # b, ch, d, h, w
+
+"""
+get fps, the number of frames, and duration of a video
+"""
+def video_stats(video_dir, filename):
+
+    video = os.path.join(video_dir, filename)
+
+    print(video)
+
+    vidcap = cv2.VideoCapture(video)    # major version of cv >= 3
+
+    fps = vidcap.get(cv2.CAP_PROP_FPS)
+
+    num_frames = int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT))
+
+    duration = num_frames / fps
+
     cv2.destroyAllWindows()
     vidcap.release()
 
-    return clips    # b, ch, d, h, w
+    return int(round(fps)), num_frames, int(round(duration))
 
 """
 dynamic programming for 0-1 knapsack problem, based on https://www.geeksforgeeks.org/knapsack-problem/ 

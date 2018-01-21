@@ -19,8 +19,8 @@ def get_config(**kwargs):
     parser = argparse.ArgumentParser()
 
     # lstm parameters
-    parser.add_argument('--input_size', type = int, default = 4096)
-    parser.add_argument('--hidden_size', type = int, default = 1024)
+    parser.add_argument('--input_size', type = int, default = 512)
+    parser.add_argument('--hidden_size', type = int, default = 512)
     parser.add_argument('--num_layers', type = int, default = 1)
 
     # training parameters
@@ -29,24 +29,30 @@ def get_config(**kwargs):
     parser.add_argument('--weight_decay', type = float, default = 0.005)
 
     # dataset path
+    # video_ds_dir: downsampled-video
     # combined dir: data combining video and ground-truth
     parser.add_argument('--video_dir_tvsum', type = str, default = Path('/localdisk/videosm/dataset/video/TVSum'))
+    parser.add_argument('--video_ds_dir_tvsum', type=str, default=Path('/localdisk/videosm/dataset/videods/TVSum'))
     parser.add_argument('--gt_dir_tvsum', type = str, default = Path('/localdisk/videosm/dataset/gt/TVSum'))
     parser.add_argument('--combined_dir_tvsum', type = str, default = Path('/localdisk/videosm/dataset/combined/TVSum'))
    
     parser.add_argument('--video_dir_summe', type = str, default = Path('/localdisk/videosm/dataset/video/SumMe'))
+    parser.add_argument('--video_ds_dir_summe', type=str, default=Path('/localdisk/videosm/dataset/videods/SumMe'))
     parser.add_argument('--gt_dir_summe', type = str, default = Path('/localdisk/videosm/dataset/gt/SumMe'))
     parser.add_argument('--combined_dir_summe', type=str, default=Path('/localdisk/videosm/dataset/combined/SumMe'))
 
     parser.add_argument('--video_dir_youtube', type=str, default=Path('/localdisk/videosm/dataset/video/Youtube'))
+    parser.add_argument('--video_ds_dir_youtube', type=str, default=Path('/localdisk/videosm/dataset/videods/Youtube'))
     parser.add_argument('--gt_dir_youtube', type=str, default=Path('/localdisk/videosm/dataset/gt/Youtube'))
     parser.add_argument('--combined_dir_youtube', type=str, default=Path('/localdisk/videosm/dataset/combined/Youtube'))
    
     parser.add_argument('--video_dir_openvideo', type = str, default = Path('/localdisk/videosm/dataset/video/OpenVideo'))
+    parser.add_argument('--video_ds_dir_openvideo', type=str, default=Path('/localdisk/videosm/dataset/videods/OpenVideo'))
     parser.add_argument('--gt_dir_openvideo', type = str, default = Path('/localdisk/videosm/dataset/gt/OpenVideo'))
     parser.add_argument('--combined_dir_openvideo', type = str, default = Path('/localdisk/videosm/dataset/combined/OpenVideo'))
 
-    parser.add_argument('--gt_dir', type=str, default=Path('/localdisk/videosm/dataset/gt'))
+    parser.add_argument('--dataset_dir', type = str, default = Path('/localdisk/videosm/dataset'))
+    parser.add_argument('--gt_dir', type = str, default = Path('/localdisk/videosm/dataset/gt'))
     parser.add_argument('--combined_dir', type = str, default = Path('/localdisk/videosm/dataset/combined'))
     
     # model path

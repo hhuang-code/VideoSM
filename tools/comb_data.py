@@ -364,8 +364,10 @@ def combine_tvsum(video_dir, gt_src_file, combined_dir, sum_rate):
 
             # write combined data (per video) to h5 file
             h5 = h5py.File(os.path.join(combined_dir, filename + '.h5'))
-            h5.create_dataset('data', data = clips, compression = 'gzip', compression_opts = 9)
-            h5.create_dataset('gt', data = gt_dict[filename], compression = 'gzip', compression_opts = 9)
+            # h5.create_dataset('data', data = clips, compression = 'gzip', compression_opts = 9)
+            # h5.create_dataset('gt', data = gt_dict[filename], compression = 'gzip', compression_opts = 9)
+            h5.create_dataset('video', data = os.path.join(video_dir, filename + '.mp4'))
+            h5.create_dataset('gt', data = gt_dict[filename])
             h5.close()
 
 """
@@ -379,15 +381,17 @@ def combine_summe(video_dir, gt_src_dir, combined_dir, sum_rate):
     # get frames for every video
     for filename, gt in gt_dict.iteritems():
 
-        if not os.path.exists(os.path.join(combined_dir, filename + '.h5')) and filename in ['playing_ball']:
+        if not os.path.exists(os.path.join(combined_dir, filename + '.h5')):
             clips = get_frames(video_dir, filename + '.mp4')
             # clips and ground-truth have the same length
             assert len(clips) == len(gt), 'clips and ground-truth have different length!'
 
             # write combined data (per video) to h5 file
             h5 = h5py.File(os.path.join(combined_dir, filename + '.h5'))
-            h5.create_dataset('data', data = clips, compression = 'gzip', compression_opts = 9)
-            h5.create_dataset('gt', data = gt_dict[filename], compression = 'gzip', compression_opts = 9)
+            # h5.create_dataset('data', data = clips, compression = 'gzip', compression_opts = 9)
+            # h5.create_dataset('gt', data = gt_dict[filename], compression = 'gzip', compression_opts = 9)
+            h5.create_dataset('video', data = os.path.join(video_dir, filename + '.mp4'))
+            h5.create_dataset('gt', data = gt_dict[filename])
             h5.close()
 
 """
@@ -421,8 +425,10 @@ def combine_youtube(video_dir, gt_src_dir, combined_dir, sum_rate):
 
             # write combined data (per video) to h5 file
             h5 = h5py.File(os.path.join(combined_dir, filename + '.h5'))
-            h5.create_dataset('data', data = clips, compression = 'gzip', compression_opts = 9)
-            h5.create_dataset('gt', data = gt_dict[filename], compression = 'gzip', compression_opts = 9)
+            # h5.create_dataset('data', data = clips, compression = 'gzip', compression_opts = 9)
+            # h5.create_dataset('gt', data = gt_dict[filename], compression = 'gzip', compression_opts = 9)
+            h5.create_dataset('video', data = os.path.join(video_dir, filename + '.avi'))
+            h5.create_dataset('gt', data = gt_dict[filename])
             h5.close()
 
     gt_h5.close()
@@ -456,8 +462,10 @@ def combine_openvideo(video_dir, gt_src_dir, combined_dir, sum_rate):
 
             # write combined data (per video) to h5 file
             h5 = h5py.File(os.path.join(combined_dir, filename + '.h5'))
-            h5.create_dataset('data', data = clips, compression = 'gzip', compression_opts = 9)
-            h5.create_dataset('gt', data = gt_dict[filename], compression = 'gzip', compression_opts = 9)
+            # h5.create_dataset('data', data = clips, compression = 'gzip', compression_opts = 9)
+            # h5.create_dataset('gt', data = gt_dict[filename], compression = 'gzip', compression_opts = 9)
+            h5.create_dataset('video', data = os.path.join(video_dir, filename + '.mpg'))
+            h5.create_dataset('gt', data = gt_dict[filename])
             h5.close()
 
     gt_h5.close()

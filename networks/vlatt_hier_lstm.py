@@ -42,12 +42,12 @@ class VLAttHierLstm(nn.Module):
         # affine transformation for vector to scalar
         self.att_v2s = nn.Linear(hidden_size, 1)
 
-        # initial states
-        self.h_0 = autograd.Variable(torch.zeros(1, 1, hidden_size)).cuda()
-        self.c_0 = autograd.Variable(torch.zeros(1, 1, hidden_size)).cuda()
+        # # initial states
+        # self.h_0 = autograd.Variable(torch.zeros(1, 1, hidden_size)).cuda()
+        # self.c_0 = autograd.Variable(torch.zeros(1, 1, hidden_size)).cuda()
 
     def forward(self, x):
-        bot_lstm_out, (bot_h_n, bot_c_n) = self.bot_lstm(x, (self.h_0, self.c_0))
+        bot_lstm_out, _ = self.bot_lstm(x)
 
         output = None   # output of VLAttHierLstm
 
@@ -63,9 +63,9 @@ class VLAttHierLstm(nn.Module):
         if idx[-1] != seq_len - 1:
             up_x = torch.cat((up_x, bot_lstm_out[-1]))
 
-        top_lstm_out, (top_h_n, top_c_n) = self.top_lstm(up_x.view(len(up_x), 1, -1), (self.h_0, self.c_0))
+        # top_h_n is ctx (context)
+        _, (ctx, _) = self.top_lstm(up_x.view(len(up_x), 1, -1))
 
-        ctx = top_h_n   # context
         for i in range(seq_len):
             y = bot_lstm_out[: (i + 1)]
             m = F.tanh(self.att_hw(y) + self.att_cw(ctx.expand(i + 1, -1, -1))
